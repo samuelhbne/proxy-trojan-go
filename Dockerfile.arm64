@@ -1,0 +1,49 @@
+FROM arm64v8/golang:1.15-alpine as builder
+WORKDIR /
+
+RUN apk add git make build-base && \
+    git clone https://github.com/p4gefau1t/trojan-go.git && \
+    cd trojan-go && \
+    make && \
+    wget https://github.com/v2ray/domain-list-community/raw/release/dlc.dat -O build/geosite.dat && \
+    wget https://github.com/v2ray/geoip/raw/release/geoip.dat -O build/geoip.dat
+RUN cd /root && git clone https://github.com/jech/polipo && cd polipo && make
+
+
+FROM arm64v8/python:3-alpine
+WORKDIR /
+
+COPY --from=builder /trojan-go/build /usr/local/bin/
+COPY --from=builder /trojan-go/example/client.yaml /etc/trojan-go/client.yaml
+COPY --from=builder /root/polipo /root/polipo
+
+RUN apk add bash socat curl openssl jq curl bind-tools whois \
+	dnscrypt-proxy ca-certificates proxychains-ng \
+	npm \
+	&& update-ca-certificates
+RUN npm config set unsafe-perm true
+RUN npm install -g qrcode-terminal
+
+RUN pip3 install yq
+
+ENV LSTNADDR="0.0.0.0"
+ENV SOCKSPORT="1080"
+ENV HTTPPORT="8123"
+ENV DNSPORT="53"
+
+RUN sed -i "s/^listen_addresses = .*/listen_addresses = \[\'0.0.0.0:$DNSPORT\'\]/g" /etc/dnscrypt-proxy/dnscrypt-proxy.toml
+RUN sed -i "s/^dnscrypt_servers = .*/dnscrypt_servers = false/g" /etc/dnscrypt-proxy/dnscrypt-proxy.toml
+RUN sed -i "s/^doh_servers = .*/doh_servers = true/g" /etc/dnscrypt-proxy/dnscrypt-proxy.toml
+RUN sed -i "s/^socks4.*/socks5\t127.0.0.1 1080/g" /etc/proxychains/proxychains.conf
+
+RUN echo "socksParentProxy=localhost:$SOCKSPORT" >>/root/polipo/config
+RUN echo "proxyAddress=$LSTNADDR" >>/root/polipo/config
+RUN echo "proxyPort=$HTTPPORT" >>/root/polipo/config
+RUN echo "daemonise=true" >>/root/polipo/config
+RUN echo "diskCacheRoot=" >>/root/polipo/config
+
+ADD run.sh /run.sh
+ADD status.sh /status.sh
+RUN chmod 755 /*.sh
+
+ENTRYPOINT ["/run.sh"]
