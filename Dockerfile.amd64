@@ -18,8 +18,8 @@ COPY --from=builder /trojan-go/example/client.yaml /etc/trojan-go/client.yaml
 COPY --from=builder /root/polipo /root/polipo
 
 RUN mkdir -p /usr/share/trojan-go && cd /usr/share/trojan-go \
-    && ln -s geoip.dat /usr/local/bin/geoip.dat \
-    && ln -s geosite.dat /usr/local/bin/geosite.dat
+    && ln -s /usr/local/bin/geoip.dat geoip.dat \
+    && ln -s /usr/local/bin/geosite.dat geosite.dat
 
 RUN apk add bash socat curl openssl jq curl bind-tools whois \
 	dnscrypt-proxy ca-certificates proxychains-ng \
