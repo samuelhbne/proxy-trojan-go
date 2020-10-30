@@ -34,7 +34,7 @@ $ docker run --name proxy-trojan-go -p 21080:1080 -p 65353:53/udp -p 28123:8123 
 ### NOTE2
 
 - Please replace "amd64" with the arch match the current box accordingly. For example: "arm64" for AWS ARM64 platform like A1, t4g instance or 64bit Ubuntu on Raspberry Pi. "arm" for 32bit Raspbian.
-- Please replace "<span>my-domain.com</span>" and "my-secret" above with your FULL domain-name and Trojan-go service access password accordingly.
+- Please replace "my-domain.com" and "my-secret" above with your FULL domain-name and Trojan-go service access password accordingly.
 - Please replace 21080 with the port you want for SOCKS5 proxy TCP listerning.
 - Please replace 28123 with the port you want for HTTP proxy TCP listerning.
 - Please replace 65353 with the port you want for DNS UDP listerning.
