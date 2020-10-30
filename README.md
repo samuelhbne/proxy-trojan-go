@@ -2,6 +2,8 @@
 
 Trojan-go client container with SOCKS5/HTTP/DNS proxy and QR code support. Running on x86 and arm/arm64 (Raspberry Pi).
 
+![docker-build](https://github.com/samuelhbne/proxy-trojan-go/workflows/docker-build/badge.svg)
+
 ## [Optional] How to build proxy-trojan-go docker image
 
 ```shell
