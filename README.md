@@ -21,12 +21,15 @@ $ docker build -t samuelhbne/proxy-trojan-go:amd64 -f Dockerfile.amd64 .
 
 ```shell
 $ docker run --rm -it samuelhbne/proxy-trojan-go:amd64
-proxy-trojan-go -d|--domain <trojan-domain> -w|--password <password> [-p|--port <port-number>] [-c|--china]
+proxy-trojan-go -d|--domain <trojan-go-domain> -w|--password <password> [-p|--port <port-number>] [-c|--china] [--wp <websocket-path>] [--sp <shadowsocks-pass>] [--sm <shadowsocks-method>]
     -d|--domain <trojan-go-domain>  Trojan-go server domain name
     -w|--password <password>        Password for Trojan-go server access
-    -p|--port <port-num>            [Optional] Port number for Trojan server connection, default 443
+    -p|--port <port-num>            [Optional] Port number for Trojan-go server connection, default 443
     -m|--mux                        [Optional] Enable Trojan-go mux (incompatible with original Trojan server), default disable
     -c|--china                      [Optional] Enable China-site access without proxy, default disable
+    --wp <websocket-path>           [Optional] Enable websocket with websocket-path setting, e.g. '/ws'. default disable
+    --sp <shadowsocks-pass>         [Optional] Enable Shadowsocks AEAD with given password, default disable
+    --sm <shadowsocks-method>       [Optional] Encryption method applied in Shadowsocks AEAD layer, default AES-128-GCM
 $ docker run --name proxy-trojan-go -p 21080:1080 -p 65353:53/udp -p 28123:8123 -d samuelhbne/proxy-trojan-go:amd64 -d my-domain.com -w my-secret -c
 ...
 ```
